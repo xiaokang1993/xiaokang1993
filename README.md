@@ -37,6 +37,15 @@
 - Agent 只持有完成当前任务所需的最小权限。
 - 删除仓库、强制推送、发布包、修改账户设置这些不可逆操作，执行前先取得人工确认。
 
+## Agent 运行时
+
+账户级 Agent 规范见 [AGENTS.md](AGENTS.md)（威胁模型、风险分级、留痕与熔断），仓库级开关见 [.agent-config.yml](.agent-config.yml)。当前工作流：
+
+- `agent-issue-triage`：新 Issue 自动打分诊标签，标签走白名单。
+- `agent-pr-review`：新 PR 自动初审，只发评论，不改代码不合并。
+
+两个工作流均为只读能力，模型 key 存仓库 secret `LLM_API_KEY`，未配置时静默跳过。`main` 已开分支保护：改动必须走 PR，禁止 force push。
+
 ## 例外
 
 结论存疑、涉及资金或对外发布时，以人工判断为准。发现这份说明和实际操作对不上，先改文档，再改行为。

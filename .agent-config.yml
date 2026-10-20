@@ -1,0 +1,39 @@
+# xiaokang1993 账户 Agent 配置（阶段一）
+# 字段说明见 AGENTS.md 第 6 节；本文件的每次修改随提交留痕。
+
+agent:
+  enable: true
+
+capabilities:
+  issue_triage: true   # 低风险：自动打分诊标签
+  pr_review: true      # 低风险：PR 初审评论
+  auto_fix: false      # 中风险，阶段二再开
+  merge: false         # 高风险，永远 false
+
+model:
+  provider: openai-compatible    # anthropic 支持在阶段二
+  api_base: https://api.openai.com/v1
+  name: gpt-4o-mini
+  secret_ref: LLM_API_KEY        # 仓库 secret 名；未配置时 Agent 跳过并提示，不报错
+
+limits:
+  max_tokens_per_run: 1500       # 单次调用输出 token 硬顶
+  max_input_chars: 12000         # 输入截断上限，控成本也缩小注入面
+
+triage:
+  labels:
+    # 分诊标签白名单，模型输出白名单外的标签一律丢弃；缺失标签由 workflow 自动补建
+    category: [bug, feature, question, other]
+    priority: [p0, p1, p2]
+
+risk_policy:
+  max_risk_level: low            # 阶段一只允许低风险动作
+
+budget:
+  daily_token_cap: 200000        # 阶段二审计库上线后强制；当前为文档化约束
+
+log:
+  detail_level: summary          # summary | full，full 仅排查幻觉时临时开
+
+notify:
+  high_risk: []                  # 阶段二起用，如 ["@xiaokang1993"]
